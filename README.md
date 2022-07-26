@@ -5,4 +5,4 @@
 4. Replace line 11 to your mapquest api key.
 5. Run geoCoding.py and wait until a new CSV file is create. The new CSV file should have coordinates corresponding to the address given.
 
-PS. Script is not fully done as addresses with keyword "and" produces incorrect corrdinates.
+PS. Script is not fully done as some addresses in the test csv file produces incorrect corrdinates.
