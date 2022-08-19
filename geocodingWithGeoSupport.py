@@ -5,6 +5,7 @@ import geopandas as gpd
 
 
 df = pd.read_csv("accessible-pedestrian-signals.csv")
+errorLog = {"LineNumber": [], 'Location': [], "Borough": [], "Errors": []}
 
 # api key and links
 apiKey = "tXetIVc1RNhRj1Us"
@@ -54,7 +55,12 @@ for i, row in df.iterrows():
             df.at[i, 'lat'] = lat
             df.at[i, 'lng'] = lng
         except:
-            print('Not geocoded: ' + str(df.at[i, 'Location']))
+            print('Not geocoded: ' + str(df.at[i, 'Location']) + " " + data["out_error_message"])
+            errorLog["LineNumber"].append(i)
+            errorLog["Location"].append(address)
+            errorLog["Borough"].append(Borough)
+            errorLog["Errors"].append(data["out_error_message"])
+
 
     # if for addresses with only at
     elif not ("between" in str(df.at[i, 'Location']) or "with" in str(df.at[i, 'Location']) or "and" in str(
@@ -79,7 +85,12 @@ for i, row in df.iterrows():
             df.at[i, 'lat'] = lat
             df.at[i, 'lng'] = lng
         except:
-            print('Not geocoded: ' + str(df.at[i, 'Location']))
+            print('Not geocoded: ' + str(df.at[i, 'Location']) + " " + data["out_error_message"])
+            errorLog["LineNumber"].append(i)
+            errorLog["Location"].append(address)
+            errorLog["Borough"].append(Borough)
+            errorLog["Errors"].append(data["out_error_message"])
+
 
     # if for addresses with "between" and "and"
     elif "between" in str(df.at[i, 'Location']) and "and" in str(df.at[i, 'Location']):
@@ -108,7 +119,12 @@ for i, row in df.iterrows():
             df.at[i, 'lat2'] = out_to_lat
             df.at[i, 'lng2'] = out_to_lng
         except:
-            print('Not geocoded: ' + str(df.at[i, 'Location']))
+            print('Not geocoded: ' + str(df.at[i, 'Location']) + " " + data["out_error_message"])
+            errorLog["LineNumber"].append(i)
+            errorLog["Location"].append(address)
+            errorLog["Borough"].append(Borough)
+            errorLog["Errors"].append(data["out_error_message"])
+
 
     # if for address with "with" and "and"
     elif "with" in str(df.at[i, 'Location']) and "and" in str(df.at[i, 'Location']):
@@ -137,7 +153,11 @@ for i, row in df.iterrows():
             df.at[i, 'lat2'] = out_to_lat
             df.at[i, 'lng2'] = out_to_lng
         except:
-            print('Not geocoded: ' + str(df.at[i, 'Location']))
+            print('Not geocoded: ' + str(df.at[i, 'Location']) + " " + data["out_error_message"])
+            errorLog["LineNumber"].append(i)
+            errorLog["Location"].append(address)
+            errorLog["Borough"].append(Borough)
+            errorLog["Errors"].append(data["out_error_message"])
 
 
 # save coordinates into another csv file
@@ -147,6 +167,10 @@ file = df.to_csv('accessible-signals-geocoded.csv')
 coords_data = pd.read_csv('accessible-signals-geocoded.csv')
 coords_gdf = gpd.GeoDataFrame(coords_data, geometry=gpd.points_from_xy(coords_data['lat'], coords_data['lng']))
 coords_gdf.to_file("geoSupportTest-InShapeFile1.shp")
+
+
+errorLogDF = pd.DataFrame(errorLog)
+errorLogDF.to_csv("ErrorLog.csv", index=False)
 
 coords_gdf2 = gpd.GeoDataFrame(coords_data, geometry=gpd.points_from_xy(coords_data['lat2'], coords_data['lng2']))
 coords_gdf2.to_file("geoSupportTest-InShapeFile2.shp")
